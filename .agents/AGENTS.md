@@ -32,21 +32,24 @@ When you receive any command, instruction, or task request from the user, you MU
 ### 6. Minimal Icons and Symbol Usage
 - **No Unnecessary Emojis or Icons**: You are FORBIDDEN from using unnecessary emojis, icons, decorative symbols, or ASCII art in source code, comments, docstrings, log messages, commit messages, and documentation unless explicitly requested by the user. Keep code, logs, and text clean, readable, and standard.
 
+### 7. Explicit Notification Before Renaming API / Method Signatures
+- **Inform & Confirm First**: Before renaming any existing function, class, variable, or method signature in shared modules, the agent MUST explicitly inform the user, explain the technical rationale, and obtain explicit user confirmation before applying the change.
+
 ---
 
 ## Part II: Git Control Rules and Standards
 
-### 7. Pre-Change Check Rules
+### 8. Pre-Change Check Rules
 - **Verify Clean State**: Before making any code modifications, you MUST run `git status` to verify if there are any uncommitted changes made by the user.
 - **Consult User on Stash/Commit**: If the workspace has uncommitted changes, do NOT overwrite them. Warn the user or ask for permission to proceed.
 - **Ensure Latest Code**: Always pull the latest code using `git pull` (or request/recommend the user to run it if write permission to remote is not set) before starting a new task, to avoid merge conflicts.
 
-### 7. File Staging (Staging Rules)
+### 9. File Staging (Staging Rules)
 - **NO Wildcards**: NEVER run `git add .` or `git add *`. This is to prevent accidentally staging sensitive files like `.env`, local configuration files, or build artifacts.
 - **Explicit Add**: Always stage files individually or by specific folders. E.g., `git add products/cortex/config/sites/nuh/config.ts`.
 - **Double Check Status**: Always run `git status` after staging to confirm exactly what files are ready for commit.
 
-### 8. Commit Message Standards (Conventional Commits)
+### 10. Commit Message Standards (Conventional Commits)
 All commit messages written by you MUST follow the Conventional Commits specification.
 - **Format**: `<type>(<scope>): <short description>`
 - **Available Types**:
@@ -62,12 +65,12 @@ All commit messages written by you MUST follow the Conventional Commits specific
   - `feat(nuh): add opd general medicine walk-in flow`
   - `fix(core): improve base page click method auto-retry`
 
-### 9. Branching Standards
-- **Naming Conventions**: When creating new branches, follow this structure:
-  - Feature branches: `feat/[ticket-id]-[short-desc]` or `feat/[module]-[desc]` (e.g., `feat/nuh-opd-flow`)
-  - Bugfix branches: `fix/[ticket-id]-[short-desc]` (e.g., `fix/locator-triage-save`)
+### 11. Branching Standards & Naming Conventions
+- **Naming Format**: Always follow `neran/[module]-[feature]` (or `feat/[module]-[feature]`).
+  - Example: `neran/reception-create-patient`
+  - Structure: `[developer]/[module-name]-[feature-name]` using all lowercase and kebab-case.
 - **No Direct Master Commit**: Never commit or push directly to `main` or `master` branches unless explicitly instructed by the user. Always work on feature branches.
 
-### 10. Merging and Pushing Rules
+### 12. Merging and Pushing Rules
 - **Explicit Approval Required**: You are FORBIDDEN from running `git push` or merging branches autonomously without the user's explicit review and approval of the final diff.
 - **Verification Before Commit/Push**: You must run compiler check (e.g., `npx tsc --noEmit` or playwright validation) to verify that your changes compile successfully before suggesting any commit or push.

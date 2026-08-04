@@ -1,0 +1,9 @@
+{
+  "nonExistentVn": "VN-99999999",
+  "nonExistentAn": "AN-99999999",
+  "unregisteredPhone": "0999999999",
+  "nonExistentPostalCode": "99999",
+  "mockWardOption": "Ward 99 - Outpatient",
+  "mockDoctorOption": "Dr. NonExistent",
+  "emptyResultText": "ไม่พบข้อมูล"
+}

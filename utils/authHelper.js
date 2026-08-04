@@ -1,14 +1,16 @@
 import { LoginPage } from '../pages/login/LoginPage.js';
 
-export async function commonLogin(page, email, password, baseUrl) {
+export async function commonLogin(page, username, password, baseUrl) {
   const loginPage = new LoginPage(page);
-  await loginPage.openWebsite(baseUrl);
-  await loginPage.login(email, password);
+  await loginPage.openWelcomePage();
+  await loginPage.assertWelcomePageVisible();
+  await loginPage.clickWelcomeLogin();
+  await loginPage.login(username, password);
+  await loginPage.assertAppsPageLoaded();
   return loginPage;
 }
 
 export async function commonLogout(page) {
-  await page.click('button[aria-label="user menu"]');
-  await page.click('text=Logout');
-  await page.waitForNavigation();
+  const loginPage = new LoginPage(page);
+  await loginPage.button.userMenu.click();
 }

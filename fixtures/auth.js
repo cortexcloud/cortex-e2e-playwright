@@ -4,7 +4,7 @@ import { commonLogin } from '../utils/authHelper.js';
 function getSiteFromConfig() {
   // Detect which config is being used from process.env or argv
   const configFile = process.env.PLAYWRIGHT_CONFIG_FILE ||
-                     process.argv.find(arg => arg.includes('playwright-')) ||
+                     process.argv.find(arg => arg && arg.includes('playwright-')) ||
                      'playwright.config.js';
 
   if (configFile.includes('tmh')) return 'TMH';
@@ -17,9 +17,9 @@ export function createAuthFixture(config = {}) {
   const sitePrefix = site ? `${site}_` : '';
 
   const defaultConfig = {
-    baseUrl: process.env.BASE_URL || 'http://localhost:3000',
-    email: process.env.TEST_EMAIL || 'user@example.com',
-    password: process.env.TEST_PASSWORD || 'password123',
+    baseUrl: process.env.BASE_URL || 'https://cortex-nuh-new.cortexcloud.co',
+    email: process.env.TEST_EMAIL || 'user1',
+    password: process.env.TEST_PASSWORD || 'MyPassw0rd',
   };
 
   // Site-specific config overrides defaults

@@ -1,0 +1,27 @@
+{
+  "malePatient": {
+    "gender": "male",
+    "prefixOptionText": "003 - นาย",
+    "prefixSearchText": "",
+    "firstName": "สมชาย",
+    "familyName": "ใจดี",
+    "birthDateBE": "15/05/2533"
+  },
+  "femaleMissPatient": {
+    "gender": "female",
+    "prefixOptionText": "004 - นางสาว",
+    "prefixSearchText": "นาง",
+    "firstName": "สุดา",
+    "familyName": "แสงทอง",
+    "birthDateBE": "10/02/2538"
+  },
+  "femaleMrsPatient": {
+    "gender": "female",
+    "prefixOptionText": "005 - นาง",
+    "prefixSearchText": "นาง",
+    "firstName": "อรุณี",
+    "familyName": "แจ่มใส",
+    "birthDateBE": "22/08/2528"
+  },
+  "invalidCitizenIdShort": "12345678901"
+}
