@@ -17,46 +17,72 @@ Shared testing infrastructure supporting multi-hospital site test automation (NU
 
 ```bash
 cortex-e2e-playwright/
+├── fixtures/                           # Global Fixtures
+│   ├── api.js                          # Global API context fixtures
+│   └── auth.js                         # Global authentication fixtures
+│
 ├── pages/                              # Shared Base Page Object Models (Feature-Based)
-│   └── login/
-│       ├── loginLocators.js            # Categorized selector dictionary for Login
-│       └── LoginPage.js                # Base Page Object Class for Login
+│   ├── login/                          # Login Feature Module
+│   │   ├── loginLocators.js            # Selector dictionary for Login
+│   │   └── LoginPage.js                # Base Page Object Class for Login
+│   └── reception/                      # Reception / Registration Feature Module
+│       ├── receptionLocators.js        # Selector dictionary for Reception
+│       ├── CreatePatientPage.js        # Base Page Object Class for Patient Creation
+│       └── SearchPatientPage.js        # Base Page Object Class for Patient Search
 │
 ├── utils/                              # Shared Utility & Helper Functions
+│   ├── authHelper.js                   # Authentication helper functions
 │   ├── identityGenerator.js            # Thai CID and Passport generator functions
-│   └── authHelper.js                   # Shared authentication helpers
+│   ├── patientGenerator.js             # Patient data mock generator functions
+│   └── patientStorage.js               # Temporary patient data persistence helper
 │
-├── tests/                              # Shared Core Tests
-│   └── unit/                           # Developer Unit Tests for Utilities
-│       └── identityGenerator.spec.js   # Unit test suite for identity generators
+├── tests/                              # Shared / Core Tests
+│   ├── unit/                           # Developer Unit Tests for Utilities
+│   │   ├── identityGenerator.spec.js   # Unit test suite for identity generators
+│   │   ├── patientGenerator.spec.js    # Unit test suite for patient generator
+│   │   └── patientStorage.spec.js      # Unit test suite for patient storage helper
+│   ├── login.spec.js                   # Shared Login test spec
+│   └── opd_walkin.spec.js              # OPD Walk-in workflow spec
 │
 ├── sites/                              # Site-Specific Code Directory
 │   ├── nuh/                            # NUH Hospital Site Directory
 │   │   ├── test_data/                  # Site Test Data
-│   │   │   ├── auth.json               # User credentials (physician, nurse, WRONG_USER)
-│   │   │   └── config.json             # Site URLs and path endpoints
-│   │   │
+│   │   │   ├── auth.json               # Credentials (physician, nurse, etc.)
+│   │   │   ├── config.json             # Site URLs and path endpoints
+│   │   │   ├── patient.json            # Patient test data template
+│   │   │   ├── created_patients.json   # Dynamic test execution patient log
+│   │   │   └── search_mockup.json      # Mockup data for patient search
 │   │   ├── pages/                      # Site-Specific Page Objects
-│   │   │   └── LoginPage.js            # NUH LoginPage subclass inheriting shared base
-│   │   │
+│   │   │   ├── LoginPage.js            # NUH LoginPage subclass
+│   │   │   ├── CreatePatientPage.js    # NUH CreatePatientPage subclass
+│   │   │   └── SearchPatientPage.js    # NUH SearchPatientPage subclass
 │   │   ├── fixtures/                   # Site Fixtures
 │   │   │   └── auth.js                 # Site authenticatedPage fixture
-│   │   │
 │   │   └── tests/                      # Site Test Specs
 │   │       ├── login.spec.js           # Login Module Test (@Module @Login)
-│   │       └── flow_med.spec.js        # Full MED E2E Flow Test (@E2E @Flow @MED)
+│   │       ├── flow_med.spec.js        # Full MED E2E Flow Test (@E2E @Flow @MED)
+│   │       ├── registration.spec.js    # Patient Registration Test (@Module @Registration)
+│   │       └── search_patient.spec.js  # Patient Search Test (@Module @Search)
 │   │
 │   └── tmh/                            # TMH Hospital Site Directory
-│       ├── test_data/
-│       ├── pages/
-│       ├── fixtures/
-│       └── tests/
+│   │   ├── test_data/
+│   │   ├── pages/
+│   │   ├── fixtures/
+│   │   │   └── auth.js
+│   │   ├── utils/
+│   │   └── tests/
+│   │       └── flow_med.spec.js
 │
-├── playwright.config.js                # Global Playwright config
+├── playwright.config.js                # Global Playwright config (JS)
+├── playwright.config.ts                # Global Playwright config (TS)
 ├── playwright-nuh.config.ts           # NUH site Playwright config
 ├── playwright-tmh.config.ts           # TMH site Playwright config
 ├── package.json                        # Project dependencies and npm scripts
-└── .env.example                       # Environment variables template
+├── package-lock.json                   # Lockfile for dependencies
+├── .env.example                       # Environment variables template
+├── datatest_id_standard_proposal.md   # UI data-testid standard specification
+├── cortex_automation_standards.pdf     # Framework design & architecture standard document
+└── cortex_automation_standards.html    # Framework design standard web format
 ```
 
 ---
