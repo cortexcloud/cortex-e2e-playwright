@@ -1,0 +1,6 @@
+{
+  "baseUrl": "https://cortex-sbh-new.cortexcloud.co",
+  "welcomePath": "/cortex/welcome",
+  "appsPath": "/cortex/apps",
+  "keycloakHost": "id-cortex-sbh-new.cortexcloud.co"
+}

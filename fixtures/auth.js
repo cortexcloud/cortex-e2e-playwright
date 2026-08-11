@@ -9,6 +9,7 @@ function getSiteFromConfig() {
 
   if (configFile.includes('tmh')) return 'TMH';
   if (configFile.includes('nuh')) return 'NUH';
+  if (configFile.includes('sbh')) return 'SBH';
   return null;
 }
 
@@ -17,7 +18,7 @@ export function createAuthFixture(config = {}) {
   const sitePrefix = site ? `${site}_` : '';
 
   const defaultConfig = {
-    baseUrl: process.env.BASE_URL || 'https://cortex-nuh-new.cortexcloud.co',
+    baseUrl: process.env.BASE_URL || 'https://dev-x.cortexcloud.co/cortex',
     email: process.env.TEST_EMAIL || 'user1',
     password: process.env.TEST_PASSWORD || 'MyPassw0rd',
   };
