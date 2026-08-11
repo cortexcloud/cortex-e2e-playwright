@@ -5,7 +5,7 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   timeout: 60000,
-  testDir: './sites/tmh/tests',
+  testDir: './sites/sbh/tests',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
@@ -16,7 +16,7 @@ export default defineConfig({
   ],
   use: {
     video: 'retain-on-failure',
-    baseURL: process.env.TMH_URL || 'https://cortex-tmh-new.cortexcloud.co',
+    baseURL: process.env.SBH_URL || 'https://cortex-sbh-new.cortexcloud.co',
     trace: 'on-first-retry',
     launchOptions: {
       slowMo: process.env.SLOWMO ? parseInt(process.env.SLOWMO, 10) : 0,
