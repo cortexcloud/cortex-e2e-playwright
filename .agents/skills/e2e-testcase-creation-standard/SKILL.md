@@ -55,5 +55,5 @@ Follow these 5 steps when implementing any new E2E test case:
 - Assign appropriate tags (`@Module`/`@E2E`, `@Regression`, `@HappyPath`/`@NegativePath`, `@Site`).
 
 ### Step 5: Execute Verification & Inspect Report
-- Run local verification: `npx playwright test --config=playwright-<site>.config.ts --grep "@Tag"`
+- Run local verification: `npx playwright test --config=playwright.sites.config.ts --project=<site> --grep "@Tag"`
 - Inspect Playwright HTML report: `npx playwright show-report`
