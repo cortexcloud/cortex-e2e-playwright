@@ -9,8 +9,8 @@
   },
   "femaleMissPatient": {
     "gender": "female",
-    "prefixOptionText": "004 - นางสาว",
-    "prefixSearchText": "นาง",
+    "prefixOptionText": "004 - น.ส.",
+    "prefixSearchText": "004",
     "firstName": "สุดา",
     "familyName": "แสงทอง",
     "birthDateBE": "10/02/2538"
@@ -18,10 +18,11 @@
   "femaleMrsPatient": {
     "gender": "female",
     "prefixOptionText": "005 - นาง",
-    "prefixSearchText": "นาง",
+    "prefixSearchText": "005",
     "firstName": "อรุณี",
     "familyName": "แจ่มใส",
     "birthDateBE": "22/08/2528"
   },
-  "invalidCitizenIdShort": "12345678901"
+  "invalidCitizenIdShort": "12345678901",
+  "dobCalculationSampleAge": 49
 }

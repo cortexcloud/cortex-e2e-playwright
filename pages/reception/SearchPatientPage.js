@@ -36,15 +36,20 @@ export class SearchPatientPage {
    * @returns {string}
    */
   getBaseUrl() {
-    return process.env.BASE_URL || process.env.NUH_URL || 'https://cortex-nuh-new.cortexcloud.co';
+    return process.env.BASE_URL || process.env.NUH_URL || '';
   }
 
   /**
-   * Opens Search Patient Landing Page (/cortex/reception/search-patient) and waits for iframe and inputs to render
+   * Opens the Search Patient page directly (confirmed: a full-page goto() straight to
+   * /search-patient loads correctly) and waits for it to render.
    */
   async openSearchPatientPage() {
-    const targetUrl = `${this.getBaseUrl()}${this.selectors.searchPage.path}`;
-    await this.page.goto(targetUrl, { waitUntil: 'domcontentloaded' });
+    if (!this.page.url().includes('search-patient')) {
+      const targetUrl = `${this.getBaseUrl()}${this.selectors.searchPage.path}`;
+      await this.page.goto(targetUrl, { waitUntil: 'domcontentloaded' });
+      // Guards against the Keycloak session iframe occasionally flashing during SPA transition.
+      await this.page.waitForLoadState('networkidle').catch(() => {});
+    }
 
     // 1. Wait for iframe element attached in parent DOM
     await this.page.waitForSelector(this.selectors.iframe, { state: 'attached', timeout: 30000 });
@@ -249,6 +254,11 @@ export class SearchPatientPage {
   /**
    * Asserts negative path search result (No Data Found / ไม่พบข้อมูล)
    * Verifies URL remains on search page and does not navigate away to patient profile
+   *
+   * NOTE: `searchPage.emptyStateContainer` ([data-testid="idle-state"]) is confirmed as the
+   * container shown BEFORE any search is performed. It has not been confirmed whether the
+   * app reuses the same testid for a genuine "no results found" state after a search — verify
+   * against the live app before trusting this assertion for TC04–TC09.
    */
   async assertEmptySearchResult() {
     await this.page.waitForTimeout(2000);

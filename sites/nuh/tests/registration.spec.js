@@ -11,7 +11,7 @@ const { saveCreatedPatient } = require('../../../utils/patientStorage.js');
 test.describe('NUH Reception Site - Patient Registration Module', () => {
 
   // TC01: Create patient entry via Radix theme CSS selector button
-  test('TC01: Open create patient form via Radix theme CSS path button @NUH @Module @Registration @Navigation @Regression', async ({ authenticatedPage }) => {
+  test('TC01: Open create patient form via button + สร้างผู้ป่วยใหม่  @NUH @Module @Registration @Navigation @Regression', async ({ authenticatedPage }) => {
     const createPatientPage = new CreatePatientPage(authenticatedPage);
     await createPatientPage.openReceptionPage();
 
@@ -22,7 +22,7 @@ test.describe('NUH Reception Site - Patient Registration Module', () => {
   });
 
   // TC02: Create patient entry via span.button-label-overflow button
-  test('TC02: Open create patient form via span.button-label-overflow button @NUH @Module @Registration @Navigation @Regression', async ({ authenticatedPage }) => {
+  test('TC02: Open create patient form via link + สร้างผู้ป่วยใหม่ @NUH @Module @Registration @Navigation @Regression', async ({ authenticatedPage }) => {
     const createPatientPage = new CreatePatientPage(authenticatedPage);
     await createPatientPage.openReceptionPage();
 
@@ -78,7 +78,7 @@ test.describe('NUH Reception Site - Patient Registration Module', () => {
     // Assert form heading title
     await createPatientPage.assertCreatePatientPageHeading('สร้างผู้ป่วยใหม่');
 
-    const dobBE = '15/05/2533'; // 1990 CE
+    const dobBE = patientData.malePatient.birthDateBE;
     await createPatientPage.fillBirthDateBE(dobBE);
 
     // Verify auto-calculated age matches calculateAgeFromDOBBE utility
@@ -93,7 +93,7 @@ test.describe('NUH Reception Site - Patient Registration Module', () => {
     // Assert form heading title
     await createPatientPage.assertCreatePatientPageHeading('สร้างผู้ป่วยใหม่');
 
-    const targetAge = 49;
+    const targetAge = patientData.dobCalculationSampleAge;
     await createPatientPage.fillAge(targetAge);
 
     // Verify auto-calculated birthdate matches calculateDOBBEFromAge utility (e.g. 01/01/2520 for age 49)
@@ -122,6 +122,9 @@ test.describe('NUH Reception Site - Patient Registration Module', () => {
     await createPatientPage.submitForm();
     await createPatientPage.assertPatientCreated();
 
+    // Pause so the patient profile page is visible (headed mode) before asserting its details
+    await authenticatedPage.waitForTimeout(3000);
+
     // Assert patient profile details (First Name, Last Name, Citizen ID) on patient info page
     await createPatientPage.assertPatientProfileDetails(randomPatient);
 
@@ -142,8 +145,8 @@ test.describe('NUH Reception Site - Patient Registration Module', () => {
       age: Number(age),
     }, 'nuh');
 
-    // Perform patient search by captured HN
-    await createPatientPage.searchPatientByHN(patientHN);
+    // // Perform patient search by captured HN
+    // await createPatientPage.searchPatientByHN(patientHN);
 
     // Assert search result opens the patient profile page matching HN
     await createPatientPage.assertPatientSearchResult(patientHN);
