@@ -1,5 +1,6 @@
 const { LoginPage: SharedLoginPage } = require('../../../pages/login/LoginPage.js');
 const nuhConfig = require('../test_data/config.json');
+const { getNuhBaseUrl } = require('../utils/baseUrl.js');
 
 /**
  * NUH Site-specific Login Page Object Model
@@ -24,6 +25,6 @@ export class LoginPage extends SharedLoginPage {
    * @returns {string}
    */
   getBaseUrl() {
-    return process.env.NUH_URL || nuhConfig.baseUrl;
+    return getNuhBaseUrl();
   }
 }

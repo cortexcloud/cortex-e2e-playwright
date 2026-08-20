@@ -1,5 +1,4 @@
 {
-  "baseUrl": "https://cortex-nuh-new.cortexcloud.co",
   "welcomePath": "/cortex/welcome",
   "appsPath": "/cortex/apps",
   "keycloakHost": "id-cortex-nuh-new.cortexcloud.co"

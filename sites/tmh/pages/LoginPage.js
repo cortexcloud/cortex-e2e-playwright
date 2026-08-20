@@ -1,5 +1,6 @@
 const { LoginPage: SharedLoginPage } = require('../../../pages/login/LoginPage.js');
 const tmhConfig = require('../test_data/config.json');
+const { getTmhBaseUrl } = require('../utils/baseUrl.js');
 
 /**
  * TMH Site-specific Login Page Object Model
@@ -24,6 +25,6 @@ export class LoginPage extends SharedLoginPage {
    * @returns {string}
    */
   getBaseUrl() {
-    return process.env.TMH_URL || tmhConfig.baseUrl;
+    return getTmhBaseUrl();
   }
 }
