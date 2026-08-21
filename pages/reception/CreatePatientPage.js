@@ -43,26 +43,31 @@ export class CreatePatientPage {
    * @returns {string}
    */
   getBaseUrl() {
-    return process.env.BASE_URL || process.env.NUH_URL || 'https://cortex-nuh-new.cortexcloud.co';
+    return process.env.BASE_URL || process.env.NUH_URL || '';
   }
 
   /**
-   * Opens Reception Landing Page (/cortex/reception) and waits for UI to load
+   * Opens Search Patient page (/cortex/reception/search-patient) and waits for UI to load.
+   * This is the page the "สร้างผู้ป่วยใหม่" entry buttons live on (inside the reception iframe).
    */
   async openReceptionPage() {
-    const targetUrl = `${this.getBaseUrl()}/cortex/reception`;
+    const targetUrl = `${this.getBaseUrl()}/cortex/reception/search-patient`;
     await this.page.goto(targetUrl, { waitUntil: 'domcontentloaded' });
     await this.page.waitForLoadState('networkidle').catch(() => {});
     await this.page.waitForTimeout(2000);
   }
 
   /**
-   * Opens Create Patient form directly and waits for iframe and key form elements to fully render
-   * @param {string} [path]
+   * Opens the Create Patient form directly (confirmed: a full-page goto() straight to
+   * /create-patient loads correctly) and waits for it to render.
    */
-  async openCreatePatientForm(path = this.selectors.path.createPatient) {
-    const targetUrl = path.startsWith('http') ? path : `${this.getBaseUrl()}${path}`;
-    await this.page.goto(targetUrl, { waitUntil: 'domcontentloaded' });
+  async openCreatePatientForm() {
+    if (!this.page.url().includes('create-patient')) {
+      const targetUrl = `${this.getBaseUrl()}${this.selectors.path.createPatient}`;
+      await this.page.goto(targetUrl, { waitUntil: 'domcontentloaded' });
+      // Guards against the Keycloak session iframe occasionally flashing during SPA transition.
+      await this.page.waitForLoadState('networkidle').catch(() => {});
+    }
 
     // 1. Wait for iframe element attached in parent DOM
     await this.page.waitForSelector(this.selectors.iframe, { state: 'attached', timeout: 30000 });
@@ -80,13 +85,14 @@ export class CreatePatientPage {
   }
 
   /**
-   * Clicks Create Patient button via CSS path (Radix theme button) with smart fallback
+   * Clicks the main Create Patient entry button ([data-testid="create-patient-button"])
+   * on the Search Patient page. Lives inside the reception iframe, not the parent page.
    */
   async clickCreatePatientByRadixSelector() {
     if (this.page.url().includes('create-patient')) {
       return;
     }
-    const button = this.page.locator(this.selectors.entry.radixButtonSpan).or(this.page.getByText('สร้างผู้ป่วยใหม่')).first();
+    const button = this.getFrame().locator(this.selectors.entry.createPatientButton);
     const isVisible = await button.isVisible({ timeout: 10000 }).catch(() => false);
 
     if (isVisible) {
@@ -98,13 +104,14 @@ export class CreatePatientPage {
   }
 
   /**
-   * Clicks Create Patient button via span label text "สร้างผู้ป่วยใหม่" with smart fallback
+   * Clicks the secondary "+ สร้างผู้ป่วยใหม่" entry button inside the idle/empty-state card
+   * on the Search Patient page. Lives inside the reception iframe, not the parent page.
    */
   async clickCreatePatientBySpanLabel() {
     if (this.page.url().includes('create-patient')) {
       return;
     }
-    const button = this.page.locator('span.button-label-overflow, button, a, span').filter({ hasText: 'สร้างผู้ป่วยใหม่' }).first();
+    const button = this.getFrame().locator(this.selectors.entry.createPatientIdleStateButton).first();
     const isVisible = await button.isVisible({ timeout: 10000 }).catch(() => false);
 
     if (isVisible) {
@@ -135,11 +142,16 @@ export class CreatePatientPage {
   async selectFromSearchbox(fieldName, searchText, optionText) {
     const frame = this.getFrame();
     const trigger = frame.locator(`[data-testid="searchbox-trigger-${fieldName}-searchbox"]`);
-    await trigger.waitFor({ state: 'visible', timeout: 15000 });
-    await trigger.click();
+    const searchInput = frame.locator(this.selectors.searchbox.searchInputByName(fieldName));
 
-    const searchInput = frame.locator(this.selectors.searchbox.searchInput);
-    await searchInput.waitFor({ state: 'visible', timeout: 15000 });
+    // A successful trigger.click() only confirms the click landed - it does not confirm the
+    // Radix popover actually stayed open (its outside-click auto-close handler can race with
+    // the very click that opens it). Retry the click until the search input is confirmed visible.
+    await expect(async () => {
+      await trigger.click();
+      await expect(searchInput).toBeVisible({ timeout: 2000 });
+    }).toPass({ timeout: 15000 });
+
     await searchInput.fill(searchText);
 
     const option = frame.locator(this.selectors.searchbox.optionItem, { hasText: optionText }).first();
@@ -187,6 +199,28 @@ export class CreatePatientPage {
     const input = this.getFrame().locator(this.selectors.input.age);
     await input.fill(String(age));
     await this.page.waitForTimeout(500);
+  }
+
+  /**
+   * Fills patient mobile phone number inside iframe.
+   * NOTE: data-testid="mobile-phone-input" is reused on 4 fields (patient/home,
+   * emergency contact mobile/home) — the selector disambiguates via name="mobilePhoneNumber".
+   * @param {string} mobile
+   */
+  async fillMobilePhone(mobile) {
+    const input = this.getFrame().locator(this.selectors.input.mobilePhone);
+    await input.waitFor({ state: 'visible', timeout: 15000 });
+    await input.fill(mobile);
+  }
+
+  /**
+   * Fills remark/note field inside iframe
+   * @param {string} note
+   */
+  async fillRemark(note) {
+    const input = this.getFrame().locator(this.selectors.input.remark);
+    await input.waitFor({ state: 'visible', timeout: 15000 });
+    await input.fill(note);
   }
 
   /**

@@ -80,11 +80,8 @@ cortex-e2e-playwright/
 │       └── tests/
 │           └── login.spec.js
 │
-├── playwright.config.js                # Global Playwright config (JS)
-├── playwright.config.ts                # Global Playwright config (TS)
-├── playwright-nuh.config.ts           # NUH site Playwright config
-├── playwright-tmh.config.ts           # TMH site Playwright config
-├── playwright-sbh.config.ts           # SBH site Playwright config
+├── playwright.config.ts                # Shared/core config - tests/unit/* (no browser needed)
+├── playwright.sites.config.ts          # Multi-site config (nuh/tmh/sbh projects)
 ├── package.json                        # Project dependencies and npm scripts
 ├── package-lock.json                   # Lockfile for dependencies
 ├── .env.example                       # Environment variables template
@@ -159,17 +156,20 @@ npm run test:sbh
 
 ```bash
 # Run NUH Regression suite
-npx playwright test --config=playwright-nuh.config.ts --grep "@Regression"
+npx playwright test --config=playwright.sites.config.ts --project=nuh --grep "@Regression"
 
 # Run NUH Login Module tests
-npx playwright test --config=playwright-nuh.config.ts --grep "@Login"
+npx playwright test --config=playwright.sites.config.ts --project=nuh --grep "@Login"
 
 # Run NUH Negative Path tests
-npx playwright test --config=playwright-nuh.config.ts --grep "@NegativePath"
+npx playwright test --config=playwright.sites.config.ts --project=nuh --grep "@NegativePath"
 
 # Run NUH E2E Flow tests
-npx playwright test --config=playwright-nuh.config.ts --grep "@E2E"
+npx playwright test --config=playwright.sites.config.ts --project=nuh --grep "@E2E"
 ```
+
+NUH also has a dedicated tag-based runner script (`scripts/run-nuh-tests.sh`) with a `-m headed|headless`
+flag - see `npm run test:nuh:tag -- -h` for usage.
 
 ### 4. Running Utility Unit Tests
 

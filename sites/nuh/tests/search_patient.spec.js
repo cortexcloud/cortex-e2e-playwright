@@ -1,26 +1,56 @@
 const { test, expect } = require('../fixtures/auth.js');
 const { SearchPatientPage } = require('../pages/SearchPatientPage.js');
-const { getCreatedPatients } = require('../../../utils/patientStorage.js');
+const { CreatePatientPage } = require('../pages/CreatePatientPage.js');
+const { getCreatedPatients, saveCreatedPatient } = require('../../../utils/patientStorage.js');
+const { generateRandomPatient } = require('../../../utils/patientGenerator.js');
 const searchMockup = require('../test_data/search_mockup.json');
+
+/**
+ * Returns the most recently registered patient from created_patients.json.
+ * If storage is empty (e.g. first run, or search tests run in isolation without
+ * registration.spec.js first), registers a brand-new patient via the UI instead of
+ * falling back to fabricated test data — this guarantees targetPatient always exists
+ * for real in the system, so the search assertions can actually find it.
+ * @param {import('@playwright/test').Page} authenticatedPage
+ * @returns {Promise<Object>}
+ */
+async function ensureTargetPatient(authenticatedPage) {
+  const createdList = getCreatedPatients('nuh');
+  if (createdList && createdList.length > 0) {
+    return createdList[createdList.length - 1];
+  }
+
+  const createPatientPage = new CreatePatientPage(authenticatedPage);
+  await createPatientPage.openCreatePatientForm();
+
+  const randomPatient = generateRandomPatient({ gender: 'any', minAge: 20, maxAge: 80 });
+  await createPatientPage.fillPatientForm(randomPatient);
+  await createPatientPage.submitForm();
+  await createPatientPage.assertPatientCreated();
+
+  const hn = await createPatientPage.getCreatedPatientHN();
+  expect(hn).toBeTruthy();
+
+  const newPatient = {
+    hn,
+    idCardNumber: randomPatient.idCardNumber,
+    prefixOptionText: randomPatient.prefixOptionText,
+    firstName: randomPatient.firstName,
+    familyName: randomPatient.familyName,
+    gender: randomPatient.gender,
+    birthDateBE: randomPatient.birthDateBE,
+  };
+  saveCreatedPatient(newPatient, 'nuh');
+
+  return newPatient;
+}
 
 test.describe('NUH Reception Site - Patient Search Module (@SearchPage)', () => {
 
   let targetPatient;
 
-  test.beforeAll(() => {
-    const createdList = getCreatedPatients('nuh');
-    if (createdList && createdList.length > 0) {
-      targetPatient = createdList[createdList.length - 1]; // Use last registered patient
-    } else {
-      // Fallback default sample if storage file is empty
-      targetPatient = {
-        hn: '69007584',
-        idCardNumber: '1605829215767',
-        firstName: 'พงศกร',
-        familyName: 'มั่นคง',
-        gender: 'male',
-      };
-    }
+  test.beforeEach(async ({ authenticatedPage }) => {
+    targetPatient = await ensureTargetPatient(authenticatedPage);
   });
 
   // --- Positive Path Test Cases (Valid Registered Patient Search) ---

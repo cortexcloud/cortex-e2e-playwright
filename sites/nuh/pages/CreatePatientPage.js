@@ -1,5 +1,5 @@
 const { CreatePatientPage: SharedCreatePatientPage } = require('../../../pages/reception/CreatePatientPage.js');
-const nuhConfig = require('../test_data/config.json');
+const { getNuhBaseUrl } = require('../utils/baseUrl.js');
 
 /**
  * NUH Site-specific Create Patient Page Object Model
@@ -23,6 +23,6 @@ export class CreatePatientPage extends SharedCreatePatientPage {
    * @returns {string}
    */
   getBaseUrl() {
-    return process.env.NUH_URL || nuhConfig.baseUrl;
+    return getNuhBaseUrl();
   }
 }

@@ -1,40 +1,54 @@
 /**
  * Reception Module Locators Dictionary
  * Contains pure selector strings for Patient Registration form, Search, and entry points.
+ *
+ * Confirmed from live DOM inspection (2026-08-19): the entire Reception module renders
+ * inside an embedded iframe (src pattern `/reception/embedded/...`), separate from the
+ * Keycloak SSO iframes (`keycloak-session-iframe`, `keycloak-silent-check-sso`) that are
+ * also present on every page. All form/field locators below live INSIDE that iframe and
+ * must be queried via `page.frameLocator(receptionLocators.iframe)`, never `page.locator()`.
  */
 export const receptionLocators = {
-  iframe: 'iframe[src*="create-patient"], iframe[src*="search-patient"], iframe[src*="reception"], iframe',
+  iframe: 'iframe[src*="/reception/embedded/"]',
   heading: '[data-testid="patient-container-title"]',
   entry: {
-    radixButtonSpan: '#radix-theme > div.rt-Box.rt-r-w-100\\% > div.rt-Box._container_19nl4_1 > div.rt-Flex._content-wrapper_19nl4_6.rt-r-display-flex.rt-r-jc-start.rt-r-position-relative > div.rt-Box._layout-content-root_19nl4_12.rt-r-w-100\\% > div > div._tabs-root_1ad9o_8 > div._tabs-list_1ad9o_15 > div > div.rt-Box.rt-r-mr-2 > div > button > span',
-    buttonLabelSpan: 'span.button-label-overflow',
+    // Main entry button on the Search Patient page (inside the iframe)
+    createPatientButton: '[data-testid="create-patient-button"]',
+    // Secondary "+ สร้างผู้ป่วยใหม่" call-to-action inside the idle/empty-state card.
+    // No dedicated data-testid confirmed yet — disambiguated from createPatientButton by its "+" prefix text.
+    createPatientIdleStateButton: String.raw`text=/\+\s*สร้างผู้ป่วยใหม่/`,
   },
   headerSearch: {
-    input: 'input[aria-label="ค้นหาผู้ป่วย"], input[placeholder*="ค้นหาผู้ป่วย"], [role="combobox"][aria-label*="ค้นหา"]',
+    // Lives on the parent shell page (NOT inside the iframe) — no data-testid, id is auto-generated/unstable.
+    input: 'input[placeholder="ค้นหาผู้ป่วย"]',
     optionItem: 'div[role="option"], ul.search-results > li',
   },
   searchPage: {
     path: '/cortex/reception/search-patient',
-    heading: 'h1:has-text("ค้นหาผู้ป่วย"), h2:has-text("ค้นหาผู้ป่วย")',
+    tab: {
+      activated: '[data-testid="tab-trigger-activated"]',
+      deactivated: '[data-testid="tab-trigger-deactivated"]',
+    },
     input: {
-      hn: 'input[placeholder="HN"], input[name="hn"], [data-testid="search-hn"]',
-      name: 'input[placeholder="ชื่อ - นามสกุล"], input[placeholder*="ชื่อ"], input[name="name"]',
-      citizenId: 'input[placeholder="หมายเลขยืนยันตัวตน"], input[placeholder*="ยืนยันตัวตน"], input[name="citizenId"]',
-      phone: 'input[placeholder="เบอร์โทรศัพท์"], input[placeholder*="โทรศัพท์"], input[name="phone"]',
-      vn: 'input[placeholder="VN"], input[name="vn"]',
-      an: 'input[placeholder="AN"], input[name="an"]',
-      postalCode: 'input[placeholder="รหัสไปรษณีย์"], input[name="postalCode"]',
+      hn: '[data-testid="hn"]',
+      name: '[data-testid="name"]',
+      citizenId: '[data-testid="cid"]',
+      phone: '[data-testid="phoneNumber"]',
+      vn: '[data-testid="vn"]',
+      an: '[data-testid="an"]',
+      postalCode: '[data-testid="postalCode"]',
     },
     select: {
+      // Not covered by DOM inspection yet — placeholder guesses, verify before relying on these.
       ward: 'select[name="ward"], [data-testid="ward-select"], div:has-text("วอร์ด") + select, div:has-text("วอร์ด") [role="combobox"]',
       doctor: 'select[name="doctor"], [data-testid="doctor-select"], div:has-text("แพทย์") + select, div:has-text("แพทย์") [role="combobox"]',
     },
     button: {
-      search: 'button:has-text("ค้นหา"), button[type="submit"]',
-      clear: 'button:has-text("Clear")',
+      search: '[data-testid="search-button"]',
+      clear: '[data-testid="clear-button"]',
       readCard: 'button:has-text("อ่านบัตร")',
     },
-    emptyStateContainer: 'div:has-text("ไม่พบข้อมูล"), div:has-text("ค้นหาผู้ป่วยเพื่อดำเนินการต่อ"), .empty-result-container',
+    emptyStateContainer: '[data-testid="idle-state"]',
   },
   patientProfile: {
     hnSpan: 'span[class*="_patient-profile-hn_"]',
@@ -52,8 +66,14 @@ export const receptionLocators = {
     firstName: '[data-testid="firstName"]',
     middleName: '[data-testid="middleName"]',
     familyName: '[data-testid="familyName"]',
+    firstNameEN: '[data-testid="firstNameEN"]',
+    familyNameEN: '[data-testid="familyNameEN"]',
     birthDate: '[data-testid="birthDate"]',
     age: '[data-testid="age"]',
+    // data-testid="mobile-phone-input" is reused on 4 fields (patient mobile/home,
+    // emergency contact mobile/home) — the `name` attribute is required to disambiguate.
+    mobilePhone: '[data-testid="mobile-phone-input"][name="mobilePhoneNumber"]',
+    remark: '[data-testid="remark"]',
   },
   select: {
     gender: 'select[name="gender"]',
@@ -63,7 +83,7 @@ export const receptionLocators = {
   searchbox: {
     triggerPrefix: '[data-testid="searchbox-trigger-prefixName-searchbox"]',
     triggerByName: (fieldName) => `[data-testid="searchbox-trigger-${fieldName}-searchbox"]`,
-    searchInput: 'input[cmdk-input]',
+    searchInputByName: (fieldName) => `[data-testid="searchbox-search-${fieldName}-searchbox"]`,
     optionItem: 'div[role="option"]',
   },
   path: {

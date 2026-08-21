@@ -60,18 +60,23 @@ function generateRandomPatient(options = {}) {
 
   let firstName = '';
   let prefixOptionText = '';
-  let prefixSearchText = '';
 
   if (selectedGender === 'male') {
     firstName = MALE_NAMES[Math.floor(Math.random() * MALE_NAMES.length)];
     prefixOptionText = '003 - นาย';
-    prefixSearchText = '';
   } else {
     firstName = FEMALE_NAMES[Math.floor(Math.random() * FEMALE_NAMES.length)];
     const isSingle = Math.random() > 0.5;
-    prefixOptionText = isSingle ? '004 - นางสาว' : '005 - นาง';
-    prefixSearchText = 'นาง';
+    // The "004" option's rendered label is the abbreviation "น.ส." (confirmed via live
+    // screenshot), not the full word "นางสาว" - using the full word here made hasText matching
+    // fail against the real option every time, no matter what search text was typed.
+    prefixOptionText = isSingle ? '004 - น.ส.' : '005 - นาง';
   }
+
+  // The prefix searchbox filter matches against the option's leading code (e.g. "004"), not any
+  // Thai text. Deriving the search text from prefixOptionText's own code keeps it a true prefix
+  // match and in sync automatically.
+  const prefixSearchText = prefixOptionText.split(' - ')[0];
 
   const familyName = LAST_NAMES[Math.floor(Math.random() * LAST_NAMES.length)];
   const age = Math.floor(Math.random() * (maxAge - minAge + 1)) + minAge;

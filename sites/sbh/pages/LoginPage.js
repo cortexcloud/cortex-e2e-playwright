@@ -1,5 +1,6 @@
 const { LoginPage: SharedLoginPage } = require('../../../pages/login/LoginPage.js');
 const sbhConfig = require('../test_data/config.json');
+const { getSbhBaseUrl } = require('../utils/baseUrl.js');
 
 /**
  * SBH Site-specific Login Page Object Model
@@ -24,6 +25,6 @@ export class LoginPage extends SharedLoginPage {
    * @returns {string}
    */
   getBaseUrl() {
-    return process.env.SBH_URL || sbhConfig.baseUrl;
+    return getSbhBaseUrl();
   }
 }

@@ -1,11 +1,11 @@
-const { SearchPatientPage: BaseSearchPatientPage } = require('../../../pages/reception/SearchPatientPage.js');
+const { VisitPage: SharedVisitPage } = require('../../../pages/visit/VisitPage.js');
 const { getNuhBaseUrl } = require('../utils/baseUrl.js');
 
 /**
- * NUH Site Specific Search Patient Page Object Model
- * Extends BaseSearchPatientPage for NUH reception site customization.
+ * NUH Site-specific Visit Page Object Model
+ * Extends shared VisitPage to inherit Create Visit actions and locators.
  */
-export class SearchPatientPage extends BaseSearchPatientPage {
+export class VisitPage extends SharedVisitPage {
   /**
    * @param {import('@playwright/test').Page} page
    */

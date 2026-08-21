@@ -111,4 +111,4 @@ Examples:
 ## 4. Approval & Safety Protocols
 
 - **Explicit Approval Required**: AI agents and automated scripts are forbidden from running `git push` or merging branches autonomously without the user's explicit review and approval of the diff.
-- **Compiler / Test Check Required**: Run `npx playwright test --config=playwright-<site>.config.ts --list` or execute test verification before proposing commit/push.
+- **Compiler / Test Check Required**: Run `npx playwright test --config=playwright.sites.config.ts --project=<site> --list` or execute test verification before proposing commit/push.
